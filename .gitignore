@@ -1,0 +1,4 @@
+app/vendor
+debug/
+production/
+.DS_Store
