@@ -1,4 +1,5 @@
 app/vendor
+node_modules/
 debug/
 production/
 .DS_Store
