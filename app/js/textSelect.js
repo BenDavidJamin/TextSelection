@@ -52,25 +52,7 @@
    */
   TextSelection.appendPosition = function (position){
     var target = document.elementFromPoint(position.left, position.top);
-    if(target == null){
-      var node = TextSelection._getEnd();
-      // /---^---/ in between word boundaries
-      var i = 0;
-      while(i < 100){
-        if(node.offsetLeft <= position.left &&
-         position.left <= (node.offsetLeft + node.offsetWidth)&&
-          position.top >= node.offsetTop &&
-          position.top <= (node.offsetTop + node.offsetHeight)){
-          TextSelection.append(node);
-          return; // end loop 
-        }else{
-          node = TextSelection._findNode(node, position);
-        }
-        i++;
-      }
-    }else {
-      TextSelection.append(target);
-    }
+    TextSelection.append(target);
   },
   /**
    * [Pre appends the node at the given position]
@@ -80,26 +62,7 @@
   TextSelection.preappendPosition = function (position){
     var target = document.elementFromPoint(position.left, position.top);
     //try and find the node that is next to our start position
-    if(target == null){
-      var node = TextSelection._getStart();
-      // /---^---/ in between word boundaries
-      var i = 0;
-      while(i < 100){
-        if(
-          node.offsetLeft <= position.left &&
-          position.left <= (node.offsetLeft + node.offsetWidth) &&
-          position.top >= node.offsetTop &&
-          position.top <= (node.offsetTop + node.offsetHeight)){
-          TextSelection.preappend(node);
-          return;
-        }else{
-          node = TextSelection._findNode(node, position);
-        }
-        i++;
-      }
-    }else{
-      TextSelection.preappend(target);
-    }
+    TextSelection.preappend(target);
   },
 
   TextSelection.preappend = function(target){
@@ -167,50 +130,6 @@
       startNode = startNode.parentNode;
     }
     return startNode;
-  }
-  /**
-   * [ white space text nodes present an issue when
-   *  walking through the siblings. This is just a loop
-   *  that checks for those nasty white spaces and steps over them]
-   * @param  {[type]} node     [description]
-   * @param  {[type]} position [description]
-   * @return {[type]}          [Node]
-   */
-  TextSelection._findNode = function(node, position){
-    var previous = node.previousSibling;
-    var next = node.nextSibling;
-    // TODO test and make these work with 
-    // multiple nodes containing white space. 
-    do {
-      next = next.nextSibling;
-    }while(next.innerText == "" ||
-        next.nodeValue == " ");
-
-    do{
-      previous = previous.previousSibling;
-    }
-    while(previous.innerText == "" ||
-      previous.nodeValue == " ");
-
-    if(
-      (node.offsetLeft + node.offsetWidth) <= position.left && 
-      position.left <= next.offsetLeft 
-      ||
-      (previous.offsetLeft + previous.offsetWidth) <= position.left &&
-      position.left <= node.offsetLeft 
-      ){
-      return null;
-    }else if(position.top <= previous.offsetTop){
-      return previous;
-    }else if(position.top >= next.offsetTop + next.offsetHeight){
-      return next;
-    }else if(next.offsetLeft <= position.left){
-      return next;
-    }else if(previous.offsetLeft <=  position.left){
-      return previous;
-    }else{
-      return null;
-    } 
   }
 
 /*
