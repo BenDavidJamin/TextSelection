@@ -4,5 +4,9 @@
   "dependencies": {
     "grunt": "*",
     "grunt-contrib": "*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-requirejs": "~0.4.0"
   }
 }
