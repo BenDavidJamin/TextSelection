@@ -26,24 +26,33 @@
    TextSelection.underline = function(){
     var underline = document.createElement("span");
     underline.style.textDecoration = "underline";
-    TextSelection._replacer(underline);
+    TextSelection._replacer("underline");
 
    },
 
-  TextSelection._replacer = function(replacement){
-    var node = TextSelection._getStart();
-    while(node && !node.isEqualNode(TextSelection._getEnd())){
-      $(replacement).append($(node).clone());
-      var next = node.nextSibling;
-      $(node).remove();
-      node = next;
+  TextSelection._replacer = function(className){
+    var start = TextSelection._getStart();
+    var end = TextSelection._getEnd();
+    start.parentNode.className = className;
+    if(!start.isEqualNode(end)){
+      var child = start.parentNode;
+      while(!child.contains(end)){
+        if(child.nextSibling){
+          child = child.nextSibling;
+        }else{
+          child = child.parentNode.nextSibling
+        }
+      }
+      console.log(child);
     }
-    var next = node.nextSibling;
-    $(replacement).append($(node).clone());
-    $(node).remove();
-    $(replacement).insertBefore(next);
     TextSelection.clear();
-   }
+  }
+
+
+  TextSelection._travers = function(node, match, className){
+    
+  }
+
 
   /**
    * [appends the target node text to the text selection ]
@@ -66,23 +75,19 @@
   },
 
   TextSelection.preappend = function(target){
-    if(target.nodeName == "SPAN"){
       var selObj = window.getSelection();
       var selRange = selObj.getRangeAt(0);
       selRange.setStart(target,0);
       selObj.removeAllRanges();
       selObj.addRange(selRange);
-    }
   },
 
   TextSelection.append = function(target){
-    if(target.nodeName == "SPAN"){
       var selObj = window.getSelection();
       var selRange = selObj.getRangeAt(0);
       selRange.setEnd(target,1);
       selObj.removeAllRanges();
       selObj.addRange(selRange);
-    }
   },
 
   /**
@@ -110,11 +115,6 @@
   TextSelection._getEnd = function(){
     var selObj = window.getSelection();
     var endNode = selObj.getRangeAt(0).endContainer;
-    //Firefox contains the span as the container
-    //Chrome contains the text node as the container
-    if(endNode.nodeName != "SPAN"){
-      endNode = endNode.parentNode;
-    }
     return endNode;
   }
   /**
@@ -124,11 +124,6 @@
   TextSelection._getStart = function(){
     var selObj = window.getSelection();
     var startNode = selObj.getRangeAt(0).startContainer;
-    //Firefox contains the span as the container
-    //Chrome contains the text node as the container
-    if(startNode.nodeName != "SPAN"){
-      startNode = startNode.parentNode;
-    }
     return startNode;
   }
 

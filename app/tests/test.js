@@ -92,10 +92,48 @@ define(["textSelect"], function (){
 
       var selObj = window.getSelection();
       var selRange = selObj.getRangeAt(0);
+      document.body.removeChild(aDiv);  
+      document.body.removeChild(anotherDiv);
+      document.body.removeChild(endDiv);
+    });
+    xit("text highlighting of single node", function(){
+      var aDiv = createTextNode("Hi there and greetings! ");
+      var anotherDiv = createTextNode("another node ");
+      var endDiv = createTextNode("end node ");
+
+      document.body.appendChild(anotherDiv);
+      document.body.appendChild(aDiv);
+      document.body.appendChild(endDiv);
+
+      TextSelection.selectText(aDiv);
+      TextSelection.highlight();
+
+      expect(aDiv.firstChild.nodeName).toBe("SPAN");
+      //expect(aDiv.firstChild.style.backgroundColor).toBe("yellow")
 
       document.body.removeChild(aDiv);  
       document.body.removeChild(anotherDiv);
       document.body.removeChild(endDiv);
+    });
+
+    it("text highlighting of mulitple nodes", function(){
+     var aDiv = createTextNode("Hi there and greetings! ");
+      var anotherDiv = createTextNode("another node ");
+      var endDiv = createTextNode("end node ");
+
+      document.body.appendChild(anotherDiv);
+      document.body.appendChild(aDiv);
+      document.body.appendChild(endDiv);
+
+      TextSelection.selectText(aDiv);
+      TextSelection.append(endDiv);
+      TextSelection.highlight();
+      //expect(aDiv.firstChild.nodeName).toBe("SPAN");
+      //expect(aDiv.firstChild.style.backgroundColor).toBe("yellow")
+
+      //document.body.removeChild(aDiv);  
+      //document.body.removeChild(anotherDiv);
+      //document.body.removeChild(endDiv);
     });
   });
 });
