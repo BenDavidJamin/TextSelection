@@ -1,6 +1,6 @@
-//var TextSelection = (function () {
-
+;(function(){
   var TextSelection = {};
+
     /**
      * [selectText description]
      * @param  {[type]} text [description]
@@ -127,8 +127,18 @@
     return startNode;
   }
 
-/*
-  return TextSelection;
-}());
-*/
+  var all;
+  if (typeof self !== 'undefined') {
+    all = self; // Web Worker
+  } else if (typeof window !== 'undefined') {
+    all = window; // Browser
+  } else if (typeof global !== 'undefined') {
+    all = global; // NodeJS
+  }
+  all.TextSelection = TextSelection;
+  
+  if (typeof module !== 'undefined') {
+    module.exports = TextSelection;
+  }
 
+})();

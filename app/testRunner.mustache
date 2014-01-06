@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>GIS Backbone Boilerplate</title>
+    <script src="/testem.js"></script>
+    <link rel="stylesheet" href="vendor/mocha/mocha.css"></script>
+    <script src="vendor/mocha/mocha.js"></script>
+    <script src="vendor/chai/chai.js"></script>
+  </head>
+
+  <body>
+    <div id="mocha"></div>
+      <script>mocha.setup('bdd')</script>
+      <script data-main="js/main" src="vendor/requirejs/require.js"></script>
+      <script data-main="spec-runner">
+        require([{{#serve_files}}"../{{src}}",{{/serve_files}}], function(){
+            mocha.checkLeaks();
+            mocha.globals(['jQuery']);
+            mocha.run();
+        });
+      </script>
+  </body>
+</html>

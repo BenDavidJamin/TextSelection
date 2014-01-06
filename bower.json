@@ -4,6 +4,7 @@
   "dependencies": {
     "requirejs": null,
     "jquery": null,
-    "jasmine": null
+    "jasmine": "~1.3.1",
+    "chai": null
   }
 }

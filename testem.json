@@ -1,7 +1,7 @@
 {
-  "framework": "jasmine",
+  "framework": "mocha",
   "src_files": [
     "app/tests/*"
   ],
-  "test_page": "app/testRunner.html"
+  "test_page": "app/testRunner.mustache"
 }
