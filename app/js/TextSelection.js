@@ -19,20 +19,20 @@
   TextSelection.highlight = function(color){
     var highlight = document.createElement("span");
     highlight.style.backgroundColor = color || "yellow";
-    TextSelection._replacer(highlight);
+    _replacer(highlight);
    },
 
 
    TextSelection.underline = function(){
     var underline = document.createElement("span");
     underline.style.textDecoration = "underline";
-    TextSelection._replacer("underline");
+    _replacer("underline");
 
    },
 
-  TextSelection._replacer = function(className){
-    var start = TextSelection._getStart();
-    var end = TextSelection._getEnd();
+  _replacer = function(className){
+    var start = _getStart();
+    var end = _getEnd();
     start.parentNode.className = className;
     if(!start.isEqualNode(end)){
       var child = start.parentNode;
@@ -49,7 +49,7 @@
   }
 
 
-  TextSelection._travers = function(node, match, className){
+  _travers = function(node, match, className){
     
   }
 
@@ -63,18 +63,19 @@
     var target = document.elementFromPoint(position.left, position.top);
     TextSelection.append(target);
   },
+ 
   /**
    * [Pre appends the node at the given position]
    * @param  {[type]} target [description]
    * @return {[type]}        [description]
    */
-  TextSelection.preappendPosition = function (position){
+  TextSelection.prependPosition = function (position){
     var target = document.elementFromPoint(position.left, position.top);
     //try and find the node that is next to our start position
-    TextSelection.preappend(target);
+    TextSelection.prepend(target);
   },
 
-  TextSelection.preappend = function(target){
+  TextSelection.prepend = function(target){
       var selObj = window.getSelection();
       var selRange = selObj.getRangeAt(0);
       selRange.setStart(target,0);
@@ -82,6 +83,11 @@
       selObj.addRange(selRange);
   },
 
+  /**
+   * [ append a specific target to the selected text range]
+   * @param target 
+   *
+   */
   TextSelection.append = function(target){
       var selObj = window.getSelection();
       var selRange = selObj.getRangeAt(0);
@@ -99,6 +105,54 @@
     selObj.removeAllRanges();
   },
 
+
+  /**
+   * [ underlines the currently selected text ] 
+   */
+  TextSelection.underline = function(){
+    var span = document.createElement("span");
+    span.style.textDecoration = "underline";
+    _wrapSelection(span);
+  },
+
+  _wrapSelection = function(element){
+    if (window.getSelection) {
+      var sel = window.getSelection();
+      if (sel.rangeCount) {
+        var wrapStart = document.createRange();
+        var range = sel.getRangeAt(0);
+       if(!range.startContainer.isEqualNode(range.endContainer)){ 
+         wrapStart.setStart(range.startContainer, range.startOffset);
+         wrapStart.setEnd(range.startContainer, range.startContainer.length);
+         var tmp = range.startContainer; 
+         while(tmp.nextSibling === null){
+           tmp = tmp.parentNode;   
+         }
+         tmp = tmp.nextSibling;
+         while(!tmp.contains(range.endContainer)){
+           console.log(tmp);
+           var middle = document.createRange();
+           var old = tmp;
+           if(tmp.nextSibling === null){
+             tmp = tmp.parentNode;
+           }else{
+             tmp = tmp.nextSibling;
+           }
+           middle.selectNode(old);
+           middle.surroundContents(element.cloneNode());
+         }
+         var wrapEnd = document.createRange();
+         wrapEnd.setStart(range.endContainer, 0);
+         wrapEnd.setEnd(range.endContainer, range.endOffset);
+         wrapEnd.surroundContents(element.cloneNode());
+         wrapStart.surroundContents(element.cloneNode());
+       }else{
+         range.surroundContents(element.cloneNode());
+       }
+     }
+   }
+  }, 
+
   /**
    * [get the cloned range of nodes in the selection]
    * @return {[type]}        [description]
@@ -112,7 +166,7 @@
    * [ Gets the end node of the range]
    * @return {[Node]} [description]
    */
-  TextSelection._getEnd = function(){
+  _getEnd = function(){
     var selObj = window.getSelection();
     var endNode = selObj.getRangeAt(0).endContainer;
     return endNode;
@@ -121,7 +175,7 @@
    * [ Gets the starting node of the range]
    * @return {[Node]} [description]
    */
-  TextSelection._getStart = function(){
+  _getStart = function(){
     var selObj = window.getSelection();
     var startNode = selObj.getRangeAt(0).startContainer;
     return startNode;

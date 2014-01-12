@@ -53,25 +53,25 @@ define(["TextSelection"], function(){
   
       var selObj = window.getSelection();
   
-      expect(selObj.baseNode).toBe(aDiv.firstChild.firstChild);
-      expect(selObj.extentNode).toBe(anotherDiv.firstChild.firstChild);
+      chai.assert.equal(selObj.baseNode, aDiv.firstChild.firstChild);
+      chai.assert.equal(selObj.extentNode, anotherDiv.firstChild.firstChild);
       document.body.removeChild(aDiv);  
       document.body.removeChild(anotherDiv);  
     });
   
-    it( " can preappend a text node to selection", function(){
+    it( " can prepend a text node to selection", function(){
       var aDiv = createTextNode("Hi there and greetings!");
       var anotherDiv = createTextNode("another node");
       document.body.appendChild(anotherDiv);
       document.body.appendChild(aDiv);
   
       TextSelection.selectText(aDiv.firstChild);
-      TextSelection.preappend(anotherDiv.firstChild);
+      TextSelection.prepend(anotherDiv.firstChild);
   
       var selObj = window.getSelection();
   
-      expect(selObj.baseNode).toBe(anotherDiv.firstChild.firstChild);
-      expect(selObj.extentNode).toBe(aDiv.firstChild.firstChild);
+      chai.assert.equal(selObj.baseNode, anotherDiv.firstChild.firstChild);
+      chai.assert.equal(selObj.extentNode, aDiv.firstChild.firstChild);
       document.body.removeChild(aDiv);  
       document.body.removeChild(anotherDiv);
     });
