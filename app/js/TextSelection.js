@@ -16,19 +16,9 @@
     selection.addRange(range);
   },
 
-  TextSelection.highlight = function(color){
-    var highlight = document.createElement("span");
-    highlight.style.backgroundColor = color || "yellow";
-    _replacer(highlight);
-   },
-
-
-   TextSelection.underline = function(){
-    var underline = document.createElement("span");
-    underline.style.textDecoration = "underline";
-    _replacer("underline");
-
-   },
+  TextSelection.setRange = function(range){
+    TextSelection.range = range;
+  }
 
   _replacer = function(className){
     var start = _getStart();
@@ -76,11 +66,11 @@
   },
 
   TextSelection.prepend = function(target){
-      var selObj = window.getSelection();
-      var selRange = selObj.getRangeAt(0);
-      selRange.setStart(target,0);
-      selObj.removeAllRanges();
-      selObj.addRange(selRange);
+    var selObj = window.getSelection();
+    var selRange = selObj.getRangeAt(0);
+    selRange.setStart(target,0);
+    selObj.removeAllRanges();
+    selObj.addRange(selRange);
   },
 
   /**
@@ -89,11 +79,11 @@
    *
    */
   TextSelection.append = function(target){
-      var selObj = window.getSelection();
-      var selRange = selObj.getRangeAt(0);
-      selRange.setEnd(target,1);
-      selObj.removeAllRanges();
-      selObj.addRange(selRange);
+    var selObj = window.getSelection();
+    var selRange = selObj.getRangeAt(0);
+    selRange.setEnd(target,1);
+    selObj.removeAllRanges();
+    selObj.addRange(selRange);
   },
 
   /**
@@ -115,42 +105,43 @@
     _wrapSelection(span);
   },
 
+  TextSelection.highlight = function(color){
+    var highlight = document.createElement("span");
+    highlight.style.backgroundColor = color || "yellow";
+    _wrapSelection(highlight);
+  },
+
   _wrapSelection = function(element){
-    if (window.getSelection) {
-      var sel = window.getSelection();
-      if (sel.rangeCount) {
-        var wrapStart = document.createRange();
-        var range = sel.getRangeAt(0);
-       if(!range.startContainer.isEqualNode(range.endContainer)){ 
-         wrapStart.setStart(range.startContainer, range.startOffset);
-         wrapStart.setEnd(range.startContainer, range.startContainer.length);
-         var tmp = range.startContainer; 
-         while(tmp.nextSibling === null){
-           tmp = tmp.parentNode;   
-         }
-         tmp = tmp.nextSibling;
-         while(!tmp.contains(range.endContainer)){
-           console.log(tmp);
-           var middle = document.createRange();
-           var old = tmp;
-           if(tmp.nextSibling === null){
-             tmp = tmp.parentNode;
-           }else{
-             tmp = tmp.nextSibling;
-           }
-           middle.selectNode(old);
-           middle.surroundContents(element.cloneNode());
-         }
-         var wrapEnd = document.createRange();
-         wrapEnd.setStart(range.endContainer, 0);
-         wrapEnd.setEnd(range.endContainer, range.endOffset);
-         wrapEnd.surroundContents(element.cloneNode());
-         wrapStart.surroundContents(element.cloneNode());
-       }else{
-         range.surroundContents(element.cloneNode());
-       }
-     }
-   }
+    var wrapStart = document.createRange();
+    var range = _getRange();
+    if(!range.startContainer.isEqualNode(range.endContainer)){ 
+      wrapStart.setStart(range.startContainer, range.startOffset);
+      wrapStart.setEnd(range.startContainer, range.startContainer.length);
+      var tmp = range.startContainer; 
+      while(tmp.nextSibling === null){
+        tmp = tmp.parentNode;   
+      }
+      tmp = tmp.nextSibling;
+      while(!tmp.contains(range.endContainer)){
+        console.log(tmp);
+        var middle = document.createRange();
+        var old = tmp;
+        if(tmp.nextSibling === null){
+          tmp = tmp.parentNode;
+        }else{
+          tmp = tmp.nextSibling;
+        }
+        middle.selectNode(old);
+        middle.surroundContents(element.cloneNode());
+      }
+      var wrapEnd = document.createRange();
+      wrapEnd.setStart(range.endContainer, 0);
+      wrapEnd.setEnd(range.endContainer, range.endOffset);
+      wrapEnd.surroundContents(element.cloneNode());
+      wrapStart.surroundContents(element.cloneNode());
+    }else{
+      range.surroundContents(element.cloneNode());
+    }
   }, 
 
   /**
@@ -158,27 +149,30 @@
    * @return {[type]}        [description]
    */
   TextSelection.get = function(){
-    var selObj = window.getSelection();
-    var selRange = selObj.getRangeAt(0);
-    return selRange.cloneRange();
+    return _getRange().cloneRange();
   } 
   /**
    * [ Gets the end node of the range]
    * @return {[Node]} [description]
    */
   _getEnd = function(){
-    var selObj = window.getSelection();
-    var endNode = selObj.getRangeAt(0).endContainer;
-    return endNode;
+    return _getRange().endContainer;
   }
   /**
    * [ Gets the starting node of the range]
    * @return {[Node]} [description]
    */
   _getStart = function(){
-    var selObj = window.getSelection();
-    var startNode = selObj.getRangeAt(0).startContainer;
-    return startNode;
+    return _getRange().startContainer;
+  }
+
+  _getRange = function(){
+    if(typeof TextSelection.range == "undefined"){
+      var selObj = window.getSelection();
+      return selObj.getRangeAt(0);
+    } else {
+      return TextSelection.range;
+    }
   }
 
   var all;
