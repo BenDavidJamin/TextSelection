@@ -215,9 +215,6 @@
     return selectObj
   }
 
-  return SelectOptions;
-
-});
 
   var all;
   if (typeof self !== 'undefined') {
