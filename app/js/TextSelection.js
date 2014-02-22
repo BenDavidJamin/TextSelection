@@ -33,7 +33,6 @@
           child = child.parentNode.nextSibling
         }
       }
-      console.log(child);
     }
     TextSelection.clear();
   }
@@ -123,7 +122,6 @@
       }
       tmp = tmp.nextSibling;
       while(!tmp.contains(range.endContainer)){
-        console.log(tmp);
         var middle = document.createRange();
         var old = tmp;
         if(tmp.nextSibling === null){
@@ -174,6 +172,52 @@
       return TextSelection.range;
     }
   }
+
+  /**
+   * Makes a xpath from the node
+   */
+  _makeXPath = function(node, currentPath) {
+    /* this should suffice in HTML documents for selectable nodes, XML with namespaces needs more code */
+    currentPath = currentPath || '';
+    switch (node.nodeType) {
+      case 3:
+      case 4:
+        return _makeXPath(node.parentNode, 'text()[' + (document.evaluate('preceding-sibling::text()', node, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength + 1) + ']');
+      case 1:
+        return _makeXPath(node.parentNode, node.nodeName + '[' + (document.evaluate('preceding-sibling::' + node.nodeName, node, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength + 1) + ']' + (currentPath ? '/' + currentPath : ''));
+      case 9:
+        return '/' + currentPath;
+      default:
+        return '';
+    }
+  }
+
+  TextSelection.restoreSelection = function(){
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    var range = document.createRange();
+    range.setStart(document.evaluate(selectionDetails[0], document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue, Number(selectionDetails[1]));
+    range.setEnd(document.evaluate(selectionDetails[2], document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue, Number(selectionDetails[3]));
+    selection.addRange(range);
+  }
+
+  /**
+   * Stores off the range as a jsonable object.
+   */
+  TextSelection.getStorableSelection = function() {
+    var range = _getRange();
+    var selectObj = { 
+      'startXPath': _makeXPath(range.startContainer), 
+      'startOffset': range.startOffset, 
+      'endXPath': _makeXPath(range.endContainer), 
+      'endOffset': range.endOffset 
+    }
+    return selectObj
+  }
+
+  return SelectOptions;
+
+});
 
   var all;
   if (typeof self !== 'undefined') {
