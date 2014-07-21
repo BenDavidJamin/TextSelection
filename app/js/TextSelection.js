@@ -101,13 +101,18 @@
   TextSelection.underline = function(){
     var span = document.createElement("span");
     span.style.textDecoration = "underline";
+    var storableSelection = _getStorableSelection();
     _wrapSelection(span);
+    return storableSelection;
   },
 
   TextSelection.highlight = function(color){
     var highlight = document.createElement("span");
     highlight.style.backgroundColor = color || "yellow";
+    var storableSelection = _getStorableSelection();
+    //save off the storable selection before doing the wrap
     _wrapSelection(highlight);
+    return storableSelection;
   },
 
   _wrapSelection = function(element){
@@ -140,6 +145,7 @@
     }else{
       range.surroundContents(element.cloneNode());
     }
+   _clearSelection(); 
   }, 
 
   /**
@@ -147,7 +153,7 @@
    * @return {[type]}        [description]
    */
   TextSelection.get = function(){
-    return _getRange().cloneRange();
+    return _getStorableSelection();
   } 
   /**
    * [ Gets the end node of the range]
@@ -170,6 +176,18 @@
       return selObj.getRangeAt(0);
     } else {
       return TextSelection.range;
+    }
+  }
+
+  _clearSelection = function(){
+    if(window.getSelection){
+      if(window.getSelection().empty){
+        window.getSelection().empty();
+      } else if(window.getSelection().removeAllRanges){
+        window.getSelection().removeAllRanges();
+      }
+    } else if (document.selection) {
+      document.selection.empty();
     }
   }
 
@@ -204,13 +222,14 @@
   /**
    * Stores off the range as a jsonable object.
    */
-  TextSelection.getStorableSelection = function() {
+  _getStorableSelection = function() {
     var range = _getRange();
     var selectObj = { 
       'startXPath': _makeXPath(range.startContainer), 
       'startOffset': range.startOffset, 
       'endXPath': _makeXPath(range.endContainer), 
-      'endOffset': range.endOffset 
+      'endOffset': range.endOffset,
+      'text': range.toString()
     }
     return selectObj
   }
