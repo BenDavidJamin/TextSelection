@@ -1,6 +1,6 @@
 {
-  "name": "RequireJS-Starter",
-  "version": "1.0.0",
+  "name": "TextSelection",
+  "version": "0.1.0",
   "dependencies": {
     "grunt": "*",
     "grunt-contrib": "*"
